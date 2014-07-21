@@ -380,7 +380,17 @@ module PaperTrail
           obj.is_a?(Hash) && obj.each { |attr, condition| ignore << attr if condition.respond_to?(:call) && condition.call(self) }
         end
         skip = self.paper_trail_options[:skip]
-        changed - ignore - skip
+        fields = changed - ignore - skip
+        fields = fields - fields_with_blank_to_blank_changes if PaperTrail.config.skip_blank_changes
+        fields
+      end
+
+      # Returns the fields that should be ignored if PaperTrail.config.skip_blank_changes is enabled
+      # They are the fields that contains blank to blank value changes (eg nil -> '' , ' ' -> '  ', ' ' -> nil)
+      def fields_with_blank_to_blank_changes
+        fields = changes.keep_if do |field, changes_values| 
+          changes_values.is_a?(Array) && changes_values[0].blank? && changes_values[1].blank? 
+        end.collect{|a,b| a }
       end
 
       def paper_trail_switched_on?
