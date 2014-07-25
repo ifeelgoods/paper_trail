@@ -150,7 +150,7 @@ module PaperTrail
 
         # Set all the attributes in this version on the model
         attrs.each do |k, v|
-          if model.respond_to?("#{k}=")
+          if model.respond_to?("#{k}=") && model.class.column_names.include?(k.to_s)
             model[k.to_sym] = v
           else
             logger.warn "Attribute #{k} does not exist on #{item_type} (Version id: #{id})."
