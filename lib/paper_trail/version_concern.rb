@@ -215,7 +215,7 @@ module PaperTrail
         attrs.each do |k, v|
           if model.has_attribute?(k)
             model[k.to_sym] = v
-          elsif model.respond_to?("#{k}=")
+          elsif model.respond_to?("#{k}=") && model.class.column_names.include?(k.to_s)
             model.send("#{k}=", v)
           else
             logger.warn "Attribute #{k} does not exist on #{item_type} (Version id: #{id})."
