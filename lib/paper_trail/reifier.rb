@@ -116,7 +116,7 @@ module PaperTrail
         is_enum_without_type_caster = ::ActiveRecord::VERSION::MAJOR < 5 && enums.key?(k)
         if model.has_attribute?(k) && !is_enum_without_type_caster
           model[k.to_sym] = v
-        elsif model.respond_to?("#{k}=")
+        elsif model.respond_to?("#{k}=") && model.class.column_names.include?(k.to_s)
           model.send("#{k}=", v)
         elsif version.logger
           version.logger.warn(
